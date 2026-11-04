@@ -7,25 +7,25 @@ pdfjslib.GlobalWorkerOptions.workerSrc = new URL(
   import.meta.url,
 ).toString();
 
-function Image() {
-  const [image, setImage] = useState(null);
+function files() {
+  const [files, setFiles] = useState(null);
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState("");
 
-  const handleImage = (e) => {
+  const handlefiles = (e) => {
     const file = e.target.files[0];
 
     if (file) {
-      setImage(file);
+      setFiles(file);
       setText("");
       setProgress("");
     }
   };
 
   const textScan = async () => {
-    if (!image) {
-      alert("Please select an image or PDF");
+    if (!files) {
+      alert("Please select an files or PDF");
       return;
     }
 
@@ -38,17 +38,17 @@ function Image() {
 
       worker = await createWorker("eng+hin");
 
-      if (image.type.startsWith("image/")) {
-        setProgress("Scanning image...");
-        const result = await worker.recognize(image);
+      if (files.type.startsWith("image/")) {
+        setProgress("Scanning images");
+        const result = await worker.recognize(files);
         const extractedText = result.data.text.trim();
-        setText(extractedText || "Image has no readable text");
+        setText(extractedText || "Image has no text");
       }
       
       
-      else if (image.type === "application/pdf") {
-        setProgress("Loading PDF...");
-        const buffer = await image.arrayBuffer();
+      else if (files.type === "application/pdf") {
+        setProgress("Loading PDF");
+        const buffer = await files.arrayBuffer();
         const pdf = await pdfjslib.getDocument({
           data: buffer,
         }).promise;
@@ -71,7 +71,7 @@ function Image() {
           canvas.width = 0;
           canvas.height = 0;
         }
-        setText(extractedText.trim() || "PDF has no readable text");
+        setText(extractedText.trim() || "PDF has no text");
       } 
       
       else {
@@ -93,27 +93,27 @@ function Image() {
   };
   return (
     <div className="w-screen min-h-screen p-6">
-      <h1 className="text-2xl font-bold">Image to Text Converter</h1>
+      <h1 className="text-2xl font-bold">files to Text Converter</h1>
 
       <input
         type="file"
-        onChange={handleImage}
+        onChange={handlefiles}
         accept="image/*,.pdf"
         className="mt-4"
       />
 
-      {image && image.type.startsWith("image/") && (
+      {files && files.type.startsWith("image/") && (
         <div className="mt-4">
           <img
-            src={URL.createObjectURL(image)}
-            alt="Selected image"
+            src={URL.createObjectURL(files)}
+            alt="Selected files"
             width="300"
           />
         </div>
       )}
 
-      {image && image.type === "application/pdf" && (
-        <p className="mt-4">Selected PDF: {image.name}</p>
+      {files && files.type === "application/pdf" && (
+        <p className="mt-4">Selected PDF: {files.name}</p>
       )}
 
       <div className="mt-4">
@@ -141,4 +141,4 @@ function Image() {
   );
 }
 
-export default Image;
+export default files;
